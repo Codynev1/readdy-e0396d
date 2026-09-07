@@ -1,267 +1,111 @@
-import Header from '@/components/feature/Header';
-import Footer from '@/components/feature/Footer';
+import { Link } from 'react-router-dom';
+import { DaylightPage, Hero, Section, SectionHead, Eyebrow, Btn, Placeholder } from '@/components/daylight';
+
+const stats = [
+  { n: '500+', label: 'Businesses served' },
+  { n: '95%', label: 'Client retention' },
+  { n: '40%', label: 'Average cost reduction' },
+  { n: '24/7', label: 'AI availability' },
+];
+
+const specializations = [
+  'AI voice agents and receptionists',
+  'Business internet and failover',
+  'Cellular, IoT, and connectivity',
+  'Operational redesign',
+  'Product strategy and MVPs',
+  'AI + IoT + connectivity integrations',
+];
+
+const values = [
+  { title: 'Innovation', desc: 'We use what works today, not what’s promised for next year. Practical AI, applied carefully.' },
+  { title: 'Client success', desc: 'We define the measure with you up front and report on it. If it isn’t working, we say so.' },
+  { title: 'Transparency', desc: 'Fixed prices, plain language, and no lock-in after 90 days. You own everything we build.' },
+  { title: 'Partnership', desc: 'We’re down the road, not across the country. Call and a person who knows your account answers.' },
+];
 
 export default function AboutPage() {
-
-  const stats = [
-    { number: '500+', label: 'Businesses Served' },
-    { number: '95%', label: 'Client Retention Rate' },
-    { number: '40%', label: 'Average Cost Savings' },
-    { number: '24/7', label: 'Support Available' }
-  ];
-
-  const values = [
-    {
-      icon: 'ri-lightbulb-line',
-      title: 'Innovation',
-      description: 'We stay at the forefront of technology to bring you cutting-edge solutions that give your business a competitive advantage.'
-    },
-    {
-      icon: 'ri-user-heart-line',
-      title: 'Client Success',
-      description: 'Your success is our success. We measure our performance by the tangible results and ROI we deliver to your business.'
-    },
-    {
-      icon: 'ri-eye-line',
-      title: 'Transparency',
-      description: 'Clear communication, honest pricing, and transparent processes. You always know what you\'re getting and why.'
-    },
-    {
-      icon: 'ri-team-line',
-      title: 'Partnership',
-      description: 'We\'re not just a vendor - we\'re your technology partner, committed to your long-term growth and success.'
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-background-50">
-      <Header />
-      <main className="pt-20">
-        {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-background-50 via-primary-50/30 to-background-100 pt-20 pb-16 overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-primary-100/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-          <div className="absolute bottom-0 left-0 w-72 h-72 bg-primary-100/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+    <DaylightPage title="About — NevTech AI">
+      <Hero
+        eyebrow="//01 Who we are"
+        title={<>Indianapolis roots.<br /><em>A world of possibility.</em></>}
+        lede={<span style={{ display: 'block', maxWidth: 600 }}>NevTech AI helps small and mid-sized businesses modernize with AI, cellular, and workflow technology. We’re based in Indianapolis, and we pick up the phone.</span>}
+      />
 
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="eyebrow">Who We Are</div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground-950 mb-6">
-                About NevTech AI
-              </h1>
-              <p className="text-lg text-foreground-700 leading-relaxed max-w-3xl mx-auto">
-                We're on a mission to modernize small businesses with AI automation, cellular connectivity, 
-                and workflow optimization. Founded by technology experts who understand the challenges 
-                small businesses face in today's digital world.
-              </p>
-            </div>
+      <Section>
+        <div className="dl-two" style={{ gap: '40px 60px' }}>
+          <div>
+            <Eyebrow>//02 Our story</Eyebrow>
+            <h2 className="dl-h2">Built for the businesses<br />that keep Indiana running.</h2>
           </div>
-        </section>
-
-        {/* Story Section */}
-        <section className="py-20 bg-background-100">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground-950 mb-6">Our Story</h2>
-                <p className="text-foreground-700 mb-6 leading-relaxed">
-                  NevTech AI was founded with a simple belief: every small business deserves access to 
-                  enterprise-level technology solutions without the enterprise-level complexity and cost.
-                </p>
-                <p className="text-foreground-700 mb-6 leading-relaxed">
-                  Our founder, Cody Neville, saw firsthand how small businesses struggled with outdated 
-                  systems, expensive telecommunications, and manual processes that limited their growth. 
-                  He set out to create a company that would bridge this gap.
-                </p>
-                <p className="text-foreground-700 leading-relaxed">
-                  Today, we've helped over 500 businesses transform their operations, reduce costs, 
-                  and capture more opportunities through our comprehensive technology solutions.
-                </p>
-              </div>
-              <div className="flex items-center justify-center bg-background-50 rounded-xl border border-background-200 p-16">
-                <img 
-                  src="https://storage.readdy-site.link/project_files/ec385017-95f1-4eb8-87a6-886cd0a82ec1/088d9d02-7def-421b-ae39-517025f24c8a_Code_Generated_Image-4.png?v=83b4bb273d772ddc86b12bc4855e3751" 
-                  alt="NevTech AI Logo" 
-                  className="w-full max-w-md h-auto"
-                />
-              </div>
-            </div>
+          <div style={{ display: 'grid', gap: 18, maxWidth: 560 }}>
+            <p className="dl-p" style={{ margin: 0 }}>NevTech started when founder Cody Neville kept meeting the same business: good people, growing demand, and systems that hadn’t kept up. Phone lines nobody answered after five. Telecom bills nobody had reviewed in years. Software that made more work than it saved.</p>
+            <p className="dl-p" style={{ margin: 0 }}>We set out to be the one partner that could fix all of it: the strategy, the software, and the connectivity underneath. Not a vendor for each piece, and not a consultant who leaves a slide deck behind.</p>
+            <p className="dl-p" style={{ margin: 0 }}>Today we’ve helped more than 500 businesses across Indiana and beyond, from single-location home-service companies to multi-site healthcare and logistics operators.</p>
           </div>
-        </section>
+        </div>
+      </Section>
 
-        {/* Founder Section */}
-        <section className="py-20 bg-background-50">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-16">
-                <div className="eyebrow">Leadership</div>
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground-950 mb-4">Meet Our Founder</h2>
-                <p className="text-lg text-foreground-600 max-w-3xl mx-auto">
-                  Leadership backed by a decade of enterprise-level experience and proven results.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-                <div className="lg:col-span-1">
-                  <div className="bg-background-100 rounded-xl border border-background-200 p-8 text-center">
-                    <img 
-                      src="https://static.readdy.ai/image/1bc91b7d55091cd3d488a2b17839859a/8659b27b8de0c28a37fe88817e095adc.png"
-                      alt="Cody Neville, Founder of NevTech AI"
-                      className="rounded-xl object-cover object-top w-full h-80 mb-6"
-                    />
-                    <h3 className="text-2xl font-bold text-foreground-950 mb-2">Cody Neville</h3>
-                    <p className="text-foreground-600 font-medium mb-4">Founder & Chief Solutions Architect</p>
-                    <p className="text-foreground-500">NevTech AI</p>
-                  </div>
-                </div>
-
-                <div className="lg:col-span-2">
-                  <div className="space-y-6">
-                    <p className="text-lg text-foreground-700 leading-relaxed">
-                      Cody Neville is a serial entrepreneur and seasoned technology leader with a decade of high-level 
-                      experience across medical software, telecommunications, AI automation, and business operations. 
-                      Over the last 10+ years, Cody has helped build, scale, and modernize companies across multiple 
-                      industries, bringing an enterprise-level skillset to everyday businesses that want to grow smarter and faster.
-                    </p>
-
-                    <p className="text-lg text-foreground-700 leading-relaxed">
-                      Cody's career includes successfully selling over $5 million in medical software, leading a development 
-                      team of more than 50 engineers, and driving innovation in complex environments where reliability, speed, 
-                      and accuracy are critical. His background spans healthcare systems, imaging software, workflow automation, 
-                      hospitality operations, and telecommunications — giving him a rare ability to understand both business 
-                      challenges and the technical solutions that fix them.
-                    </p>
-
-                    <div className="bg-background-100 rounded-xl border border-background-200 p-8">
-                      <h4 className="text-xl font-bold text-foreground-950 mb-6">Core Specializations</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="flex items-start space-x-3">
-                          <div className="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-foreground-700">AI voice agents & automation systems</span>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <div className="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-foreground-700">Business internet consulting & optimization</span>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <div className="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-foreground-700">Cellular solutions for phones, tablets, IoT devices, and fleets</span>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <div className="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-foreground-700">Operational redesign and workflow efficiency</span>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <div className="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-foreground-700">Product strategy, prototyping, and technical execution</span>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <div className="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-foreground-700">Cutting-edge integrations combining AI + IoT + connectivity</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <p className="text-lg text-foreground-700 leading-relaxed">
-                      Cody's approach is simple: make technology work for business owners, not against them. His focus is on 
-                      saving clients money, increasing revenue, eliminating missed calls, and building reliable digital 
-                      infrastructure that supports long-term growth.
-                    </p>
-
-                    <p className="text-lg text-foreground-700 leading-relaxed">
-                      Backed by years of hands-on experience in real-world business environments and a deep understanding of 
-                      modern automation, Cody helps companies upgrade their operations with the same tools used by leading 
-                      enterprises — but at a small-business-friendly scale.
-                    </p>
-                  </div>
-                </div>
-              </div>
+      <Section alt>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '40px 60px', alignItems: 'start' }}>
+          <figure style={{ display: 'grid', gap: 12, maxWidth: 440, margin: 0 }}>
+            <Placeholder label="Founder photo · Cody Neville" style={{ aspectRatio: '4/5', textAlign: 'center', padding: 20 }} />
+            <figcaption style={{ font: "10px/1.7 'Courier New',monospace", color: '#55745d', textTransform: 'uppercase', letterSpacing: 1 }}>Cody Neville · Founder &amp; Chief Solutions Architect</figcaption>
+          </figure>
+          <div>
+            <Eyebrow>//03 Founder</Eyebrow>
+            <h2 className="dl-h2" style={{ margin: '13px 0 24px' }}>Cody Neville</h2>
+            <div style={{ display: 'grid', gap: 16, maxWidth: 560 }}>
+              <p className="dl-p" style={{ margin: 0 }}>Cody spent the first part of his career in medical software, building and selling a company for $5M and leading an engineering team of more than 50 people. Along the way he learned that most technology projects fail in the rollout, not the code.</p>
+              <p className="dl-p" style={{ margin: 0 }}>That lesson shapes how NevTech works today: start with the business need, keep people in the loop, and measure what actually changes.</p>
             </div>
-          </div>
-        </section>
-
-        {/* Stats Section */}
-        <section className="py-20 bg-background-100">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <div className="eyebrow">By the Numbers</div>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground-950 mb-4">Our Impact</h2>
-              <p className="text-lg text-foreground-600 max-w-3xl mx-auto">
-                Numbers that reflect our commitment to delivering real results for our clients.
-              </p>
-            </div>
-
-            <div className="bg-background-50 rounded-2xl border border-background-200 p-8 md:p-12">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-                {stats.map((stat, index) => (
-                  <div key={index} className="text-center">
-                    <div className="text-4xl md:text-5xl font-bold text-foreground-950 mb-2">{stat.number}</div>
-                    <div className="text-sm text-foreground-600">{stat.label}</div>
-                  </div>
+            <div style={{ marginTop: 28, borderTop: '1px solid #173c2a22', paddingTop: 20 }}>
+              <p className="dl-eyebrow" style={{ color: '#55745d', marginBottom: 12 }}>Specializations</p>
+              <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: '8px 24px', fontSize: 13, color: '#254d36' }}>
+                {specializations.map(s => (
+                  <li key={s} style={{ display: 'flex', gap: 9 }}><span style={{ color: '#07806a' }}>↗</span>{s}</li>
                 ))}
-              </div>
+              </ul>
             </div>
           </div>
-        </section>
+        </div>
+      </Section>
 
-        {/* Values Section */}
-        <section className="py-20 bg-background-50">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <div className="eyebrow">What Drives Us</div>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground-950 mb-4">Our Values</h2>
-              <p className="text-lg text-foreground-600 max-w-3xl mx-auto">
-                The principles that guide everything we do and every solution we create.
-              </p>
+      <section style={{ padding: '56px 6%', borderBottom: '1px solid #173c2a22' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 24 }}>
+          {stats.map(s => (
+            <div key={s.n} style={{ borderTop: '1px solid #173c2a22', paddingTop: 18 }}>
+              <p style={{ font: "normal 56px/1 Georgia,'Times New Roman',serif", letterSpacing: '-2px', color: '#07806a', margin: 0 }}>{s.n}</p>
+              <p style={{ font: "10px/1.8 'Courier New',monospace", textTransform: 'uppercase', letterSpacing: 1, color: '#55745d', marginTop: 10, marginBottom: 0 }}>{s.label}</p>
             </div>
+          ))}
+        </div>
+      </section>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {values.map((value, index) => (
-                <div key={index} className="bg-background-100 rounded-xl p-8 text-center border border-background-200 hover:border-primary-200 transition-colors">
-                  <div className="w-16 h-16 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-6">
-                    <i className={`${value.icon} text-primary-600 text-2xl`}></i>
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground-950 mb-4">{value.title}</h3>
-                  <p className="text-foreground-600 text-sm leading-relaxed">{value.description}</p>
-                </div>
-              ))}
-            </div>
+      <Section>
+        <SectionHead eyebrow="//04 What we value" title="How we show up." />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: '26px 35px' }}>
+          {values.map(v => (
+            <article key={v.title} style={{ paddingTop: 21, borderTop: '1px solid #173c2a22' }}>
+              <h3 style={{ fontSize: 15, fontWeight: 400, marginBottom: 11, display: 'flex', gap: 13, margin: '0 0 11px' }}><span style={{ color: '#07806a' }}>↗</span>{v.title}</h3>
+              <p style={{ fontSize: 13, color: '#566d5f', margin: 0 }}>{v.desc}</p>
+            </article>
+          ))}
+        </div>
+      </Section>
+
+      <section className="dl-cta" id="contact">
+        <p className="mono">//05 Let’s talk</p>
+        <h2>Ready to work<br /><em style={{ fontStyle: 'normal' }}>together?</em></h2>
+        <div className="dl-cta-row">
+          <p>A free 30-minute conversation. No credit card, no sales script.</p>
+          <div className="dl-cta-actions" style={{ gap: 20 }}>
+            <Btn to="/contact" light>Get a free consultation <span aria-hidden="true">↗</span></Btn>
+            <Link to="/services" style={{ fontSize: 12, color: '#d2e1d6' }}>View our services <span aria-hidden="true">↗</span></Link>
           </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-20 md:py-28 bg-primary-700">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="text-xs font-semibold tracking-widest uppercase text-primary-300 mb-6">
-                Let's modernize your business
-              </div>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-background-50 mb-6">
-                Ready to Work Together?
-              </h2>
-              <p className="text-lg text-primary-200 mb-10 leading-relaxed max-w-2xl mx-auto">
-                Let's discuss how we can help your business modernize, save money, and capture more opportunities 
-                with our comprehensive technology solutions.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a 
-                  href="/contact" 
-                  className="inline-flex items-center justify-center bg-background-50 text-foreground-950 font-semibold px-8 py-4 rounded-lg hover:bg-background-100 transition-colors whitespace-nowrap cursor-pointer"
-                >
-                  Get Free Consultation
-                  <i className="ri-arrow-right-line ml-2"></i>
-                </a>
-                <a 
-                  href="/services" 
-                  className="inline-flex items-center justify-center border-2 border-background-200 text-background-50 font-semibold px-8 py-4 rounded-lg hover:bg-background-50/10 transition-colors whitespace-nowrap cursor-pointer"
-                >
-                  View Our Services
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
+        </div>
+      </section>
+    </DaylightPage>
   );
 }

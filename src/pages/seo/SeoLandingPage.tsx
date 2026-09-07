@@ -1,391 +1,159 @@
 import { Link } from 'react-router-dom';
-import Header from '@/components/feature/Header';
-import Footer from '@/components/feature/Footer';
+import { DaylightPage, Eyebrow } from '@/components/daylight';
+import { pages, order } from '@/data/seoPages';
 
-export interface StatCard {
-  value: string;
-  label: string;
-  source: string;
-}
-
-export interface ServiceCard {
-  icon: string;
+type SeoPage = {
+  keyword: string;
+  location: string;
   title: string;
-  description: string;
-  href: string;
-}
+  accent: string;
+  subtitle: string;
+  stats: { n: string; label: string; src: string }[];
+  whatIs: string[];
+  callout: { title: string; text: string };
+  services: { icon: string; title: string; desc: string; href: string }[];
+  reasons: { title: string; desc: string }[];
+  faq: { q: string; a: string }[];
+};
 
-export interface ReasonCard {
-  icon: string;
-  title: string;
-  description: string;
-}
+const serif = "Georgia,'Times New Roman',serif";
+const mono = "'Courier New',monospace";
 
-export interface FAQItem {
-  question: string;
-  answer: string;
-}
-
-export interface SeoPageConfig {
-  badge: string;
-  heroTitle: string;
-  heroTitleAccent: string;
-  heroSubtitle: string;
-  heroParagraphs: string[];
-  statsTitle: string;
-  statsSubtitle: string;
-  stats: StatCard[];
-  whatIsTitle: string;
-  whatIsParagraphs: string[];
-  highlightTitle: string;
-  highlightText: string;
-  servicesTitle: string;
-  servicesSubtitle: string;
-  services: ServiceCard[];
-  whyTitle: string;
-  whySubtitle: string;
-  reasons: ReasonCard[];
-  faqTitle: string;
-  faqSubtitle: string;
-  faqs: FAQItem[];
-  ctaTitle: string;
-  ctaParagraph: string;
-}
-
-export default function SeoLandingPage({ config }: { config: SeoPageConfig }) {
-  const {
-    badge,
-    heroTitle,
-    heroTitleAccent,
-    heroSubtitle,
-    heroParagraphs,
-    statsTitle,
-    statsSubtitle,
-    stats,
-    whatIsTitle,
-    whatIsParagraphs,
-    highlightTitle,
-    highlightText,
-    servicesTitle,
-    servicesSubtitle,
-    services,
-    whyTitle,
-    whySubtitle,
-    reasons,
-    faqTitle,
-    faqSubtitle,
-    faqs,
-    ctaTitle,
-    ctaParagraph,
-  } = config;
+export default function SeoLandingPage({ slug }: { slug: string }) {
+  const p: SeoPage = (pages as Record<string, SeoPage>)[slug] || (pages as Record<string, SeoPage>)[order[0]];
 
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'FAQPage',
-            mainEntity: faqs.map((faq) => ({
-              '@type': 'Question',
-              name: faq.question,
-              acceptedAnswer: { '@type': 'Answer', text: faq.answer },
-            })),
-          }),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'LocalBusiness',
-            name: 'NevTech AI',
-            description: heroSubtitle,
-            telephone: '+1-317-508-9493',
-            email: 'cody@nevtech.io',
-            address: {
-              '@type': 'PostalAddress',
-              addressLocality: 'Indianapolis',
-              addressRegion: 'IN',
-              addressCountry: 'US',
-            },
-            geo: {
-              '@type': 'GeoCoordinates',
-              latitude: 39.7684,
-              longitude: -86.1581,
-            },
-            openingHoursSpecification: [
-              {
-                '@type': 'OpeningHoursSpecification',
-                dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-                opens: '09:00',
-                closes: '17:00',
-              },
-            ],
-            priceRange: '$$',
-            areaServed: {
-              '@type': 'State',
-              name: 'Indiana',
-            },
-          }),
-        }}
-      />
-      <div className="min-h-screen bg-background-50">
-        <Header />
+    <DaylightPage title={`${p.keyword} | NevTech AI`}>
+      {/* SEO hero */}
+      <section className="dl-hero">
+        <p style={{ display: 'inline-flex', alignItems: 'center', gap: 9, font: `10px/1.5 ${mono}`, textTransform: 'uppercase', letterSpacing: 1.5, color: '#07806a', padding: '7px 12px', border: '1px solid #217d5955', borderRadius: 20, background: '#dcecdf' }}>
+          <span aria-hidden="true">⌖</span>{p.location} · NevTech AI
+        </p>
+        <h1 style={{ font: `normal clamp(44px,5.4vw,84px)/1.02 ${serif}`, letterSpacing: -2.6, margin: '20px 0 24px', maxWidth: 1000 }}>
+          {p.title} <em style={{ fontStyle: 'italic', color: '#07806a' }}>{p.accent}</em>
+        </h1>
+        <p style={{ fontSize: 17, lineHeight: 1.6, color: '#566d5f', maxWidth: 620 }}>{p.subtitle}</p>
+        <div className="dl-actions">
+          <Link className="dl-btn" to="/contact">Get your free AI assessment <span aria-hidden="true">↗</span></Link>
+          <a className="dl-btn ghost" href="tel:3175089493">Call (317) 508-9493</a>
+        </div>
+        <p style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 24px', fontSize: 12, color: '#55745d', marginTop: 26 }}>
+          <span><span style={{ color: '#07806a' }}>✓</span> Free 15-minute assessment</span>
+          <span><span style={{ color: '#07806a' }}>✓</span> No obligation</span>
+          <span><span style={{ color: '#07806a' }}>✓</span> Fixed-price proposals</span>
+        </p>
+      </section>
 
-        <main>
-          {/* Hero Section */}
-          <section className="relative bg-gradient-to-br from-background-50 via-primary-50/30 to-background-100 pt-32 pb-24 overflow-hidden">
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-100/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent-100/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3"></div>
-
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-              <div className="max-w-4xl mx-auto text-center">
-                <div className="inline-flex items-center gap-2 bg-primary-100/80 text-primary-800 px-4 py-2 rounded-full text-sm font-semibold mb-6">
-                  <i className="ri-map-pin-line"></i>
-                  {badge}
-                </div>
-
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground-950 leading-tight mb-6">
-                  {heroTitle} <span className="text-primary-600">{heroTitleAccent}</span>
-                </h1>
-
-                <p className="text-lg md:text-xl text-foreground-700 mb-8 max-w-3xl mx-auto leading-relaxed">
-                  {heroSubtitle}
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-                  <Link
-                    to="/contact"
-                    className="bg-primary-500 text-background-50 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-600 transition-colors whitespace-nowrap cursor-pointer"
-                  >
-                    Get Your Free AI Assessment
-                    <i className="ri-arrow-right-line ml-2"></i>
-                  </Link>
-                  <a
-                    href="tel:3175089493"
-                    className="border-2 border-foreground-200 text-foreground-900 px-8 py-4 rounded-lg text-lg font-semibold hover:border-foreground-400 transition-colors whitespace-nowrap cursor-pointer"
-                  >
-                    <i className="ri-phone-line mr-2"></i>
-                    Call (317) 508-9493
-                  </a>
-                </div>
-
-                <div className="flex flex-wrap justify-center gap-6 text-sm text-foreground-600">
-                  <span className="flex items-center gap-2">
-                    <i className="ri-check-line text-primary-600"></i>
-                    Free 15-minute assessment
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <i className="ri-check-line text-primary-600"></i>
-                    No obligation
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <i className="ri-check-line text-primary-600"></i>
-                    Fixed-price proposals
-                  </span>
-                </div>
-              </div>
+      {/* Stats */}
+      <section style={{ padding: '56px 6%', borderBottom: '1px solid #173c2a22' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 24 }}>
+          {p.stats.map((s, i) => (
+            <div key={i} style={{ borderTop: '1px solid #173c2a22', paddingTop: 18 }}>
+              <p style={{ font: `normal 52px/1 ${serif}`, letterSpacing: -2, color: '#07806a' }}>{s.n}</p>
+              <p style={{ fontSize: 13, color: '#254d36', marginTop: 10 }}>{s.label}</p>
+              <p style={{ font: 'italic 11px Georgia,serif', color: '#55745d', marginTop: 4 }}>{s.src}</p>
             </div>
-          </section>
+          ))}
+        </div>
+      </section>
 
-          {/* Stats Section */}
-          <section className="py-20 bg-background-50">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="max-w-4xl mx-auto text-center mb-14">
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground-950 mb-4">{statsTitle}</h2>
-                <p className="text-lg text-foreground-700 max-w-2xl mx-auto">{statsSubtitle}</p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="bg-background-50 border border-background-200 rounded-xl p-6 text-center hover:border-primary-200 transition-colors"
-                  >
-                    <div className="text-4xl md:text-5xl font-bold text-primary-600 mb-3">{stat.value}</div>
-                    <div className="text-sm text-foreground-800 font-medium mb-3">{stat.label}</div>
-                    <div className="text-xs text-foreground-500 italic">{stat.source}</div>
-                  </div>
-                ))}
-              </div>
+      {/* What is */}
+      <section className="dl-section alt" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: '40px 60px', alignItems: 'start' }}>
+        <div>
+          <Eyebrow>//01 {p.keyword}</Eyebrow>
+          <h2 className="dl-h2">What it means<br />for your business.</h2>
+        </div>
+        <div style={{ display: 'grid', gap: 18, fontSize: 15, lineHeight: 1.75, color: '#3d5a49', maxWidth: 560 }}>
+          {p.whatIs.map((w, i) => <p key={i}>{w}</p>)}
+          <div style={{ marginTop: 8, padding: '20px 22px', border: '1px solid #217d5955', borderRadius: 5, background: '#dcecdf', display: 'grid', gridTemplateColumns: '28px 1fr', gap: 14 }}>
+            <span aria-hidden="true" style={{ color: '#07806a', fontSize: 20 }}>↗</span>
+            <div>
+              <h3 style={{ font: `normal 20px/1.2 ${serif}`, marginBottom: 6 }}>{p.callout.title}</h3>
+              <p style={{ fontSize: 13, color: '#3d5a49' }}>{p.callout.text}</p>
             </div>
-          </section>
+          </div>
+        </div>
+      </section>
 
-          {/* What Is / Educational Section */}
-          <section className="py-20 bg-background-100">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="max-w-4xl mx-auto">
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground-950 mb-8 text-center">{whatIsTitle}</h2>
+      {/* Services */}
+      <section className="dl-section">
+        <div className="dl-head">
+          <div>
+            <Eyebrow>//02 Services</Eyebrow>
+            <h2 className="dl-h2">Where to start in {p.location}.</h2>
+          </div>
+          <p>Pick one. We’ll connect the rest when it makes sense.</p>
+        </div>
+        <div className="dl-grid">
+          {p.services.map((s, i) => (
+            <Link key={i} to={s.href} className="dl-card dl-x-seo-service">
+              <span aria-hidden="true" style={{ width: 36, height: 36, borderRadius: 5, background: '#dcecdf', color: '#07806a', display: 'grid', placeItems: 'center', fontSize: 18 }}>{s.icon}</span>
+              <h3 style={{ font: `normal 24px/1.1 ${serif}`, letterSpacing: -0.6 }}>{s.title}</h3>
+              <p style={{ fontSize: 13, color: '#5a705f', lineHeight: 1.7 }}>{s.desc}</p>
+              <span style={{ fontSize: 12, color: '#07806a', marginTop: 'auto', paddingTop: 12, borderTop: '1px solid #173c2a22' }}>Learn more <span aria-hidden="true">↗</span></span>
+            </Link>
+          ))}
+        </div>
+      </section>
 
-                <div className="space-y-6 text-foreground-700 leading-relaxed">
-                  {whatIsParagraphs.map((paragraph, index) => (
-                    <p key={index} className={index === 0 ? 'text-lg' : undefined}>{paragraph}</p>
-                  ))}
-                </div>
+      {/* Why local */}
+      <section className="dl-section alt">
+        <div className="dl-head">
+          <div>
+            <Eyebrow>//03 Why a local partner</Eyebrow>
+            <h2 className="dl-h2">Down the road,<br />not across the country.</h2>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: '26px 35px' }}>
+          {p.reasons.map((r, i) => (
+            <article key={i} style={{ paddingTop: 21, borderTop: '1px solid #173c2a22' }}>
+              <h3 style={{ fontSize: 15, fontWeight: 400, marginBottom: 11, display: 'flex', gap: 13 }}>
+                <span style={{ color: '#07806a' }}>↗</span>{r.title}
+              </h3>
+              <p style={{ fontSize: 13, color: '#566d5f' }}>{r.desc}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
-                <div className="mt-10 bg-background-50 border border-background-200 rounded-xl p-6 md:p-8">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-primary-100 shrink-0">
-                      <i className="ri-building-line text-xl text-primary-600"></i>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground-950 mb-2">{highlightTitle}</h3>
-                      <p className="text-foreground-700 leading-relaxed">{highlightText}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+      {/* FAQ */}
+      <section className="dl-section" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '40px 60px', alignItems: 'start' }}>
+        <div>
+          <Eyebrow>//04 Questions</Eyebrow>
+          <h2 className="dl-h2">Asked often.<br />Answered plainly.</h2>
+          <Link to="/faq" className="dl-link" style={{ display: 'inline-block', marginTop: 20 }}>Full FAQ <span aria-hidden="true">↗</span></Link>
+        </div>
+        <div style={{ borderBottom: '1px solid #173c2a22' }}>
+          {p.faq.map((f, i) => (
+            <details key={i} className="dl-x-seo-faq" style={{ borderTop: '1px solid #173c2a22', padding: '16px 0' }}>
+              <summary style={{ display: 'flex', justifyContent: 'space-between', gap: 20, font: `normal 18px/1.3 ${serif}`, cursor: 'pointer', listStyle: 'none' }}>
+                <span>{f.q}</span>
+                <span style={{ color: '#07806a', transition: 'transform .2s' }}>+</span>
+              </summary>
+              <p style={{ fontSize: 14, lineHeight: 1.75, color: '#3d5a49', marginTop: 10 }}>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
 
-          {/* Services Section */}
-          <section className="py-20 bg-background-50">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="max-w-4xl mx-auto text-center mb-14">
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground-950 mb-4">{servicesTitle}</h2>
-                <p className="text-lg text-foreground-700 max-w-2xl mx-auto">{servicesSubtitle}</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {services.map((service) => (
-                  <Link
-                    key={service.title}
-                    to={service.href}
-                    className="group bg-background-50 border border-background-200 rounded-xl p-6 hover:border-primary-200 transition-colors cursor-pointer"
-                  >
-                    <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-primary-100 mb-5 group-hover:bg-primary-500 transition-colors">
-                      <i className={`${service.icon} text-xl text-primary-600 group-hover:text-background-50 transition-colors`}></i>
-                    </div>
-                    <h3 className="text-lg font-semibold text-foreground-950 mb-3 group-hover:text-primary-600 transition-colors">{service.title}</h3>
-                    <p className="text-sm text-foreground-700 leading-relaxed">{service.description}</p>
-                    <div className="mt-4 flex items-center gap-1 text-sm font-medium text-primary-600">
-                      Learn more
-                      <i className="ri-arrow-right-line text-xs"></i>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Why Choose a Local Partner */}
-          <section className="py-20 bg-background-100">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="max-w-4xl mx-auto text-center mb-14">
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground-950 mb-4">{whyTitle}</h2>
-                <p className="text-lg text-foreground-700 max-w-2xl mx-auto">{whySubtitle}</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {reasons.map((reason) => (
-                  <div key={reason.title} className="bg-background-50 border border-background-200 rounded-xl p-6">
-                    <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-accent-100 mb-4">
-                      <i className={`${reason.icon} text-lg text-accent-600`}></i>
-                    </div>
-                    <h3 className="text-base font-semibold text-foreground-950 mb-2">{reason.title}</h3>
-                    <p className="text-sm text-foreground-700 leading-relaxed">{reason.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* FAQ Section */}
-          <section className="py-20 bg-background-50">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="max-w-3xl mx-auto">
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground-950 mb-4 text-center">{faqTitle}</h2>
-                <p className="text-lg text-foreground-700 text-center mb-12 max-w-xl mx-auto">{faqSubtitle}</p>
-
-                <div className="space-y-4">
-                  {faqs.map((faq, index) => (
-                    <details
-                      key={index}
-                      className="group bg-background-50 border border-background-200 rounded-xl overflow-hidden"
-                    >
-                      <summary className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-background-100 transition-colors list-none">
-                        <h3 className="text-base font-semibold text-foreground-950 pr-6">{faq.question}</h3>
-                        <span className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-background-200 group-open:bg-primary-100 transition-colors">
-                          <i className="ri-add-line text-sm text-foreground-600 group-open:hidden"></i>
-                          <i className="ri-subtract-line text-sm text-primary-600 hidden group-open:block"></i>
-                        </span>
-                      </summary>
-                      <div className="px-6 pb-5">
-                        <p className="text-foreground-700 leading-relaxed">{faq.answer}</p>
-                      </div>
-                    </details>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Final CTA */}
-          <section className="py-24 bg-gradient-to-br from-primary-500/10 via-background-100 to-accent-500/10">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="max-w-3xl mx-auto text-center">
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground-950 mb-4">{ctaTitle}</h2>
-                <p className="text-lg text-foreground-700 mb-8 max-w-xl mx-auto leading-relaxed">{ctaParagraph}</p>
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
-                  <Link
-                    to="/contact"
-                    className="bg-primary-500 text-background-50 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-600 transition-colors whitespace-nowrap cursor-pointer"
-                  >
-                    Get Your Free Assessment
-                    <i className="ri-arrow-right-line ml-2"></i>
-                  </Link>
-                  <a
-                    href="tel:3175089493"
-                    className="border-2 border-foreground-200 text-foreground-900 px-8 py-4 rounded-lg text-lg font-semibold hover:border-foreground-400 transition-colors whitespace-nowrap cursor-pointer"
-                  >
-                    <i className="ri-phone-line mr-2"></i>
-                    Call (317) 508-9493
-                  </a>
-                </div>
-
-                <div className="bg-background-50 border border-background-200 rounded-xl p-6 md:p-8">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-                    <div>
-                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-100 mx-auto mb-3">
-                        <i className="ri-map-pin-line text-lg text-primary-600"></i>
-                      </div>
-                      <div className="text-sm font-semibold text-foreground-950 mb-1">Indiana Office</div>
-                      <div className="text-sm text-foreground-600">Indianapolis, IN · USA</div>
-                    </div>
-                    <div>
-                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-100 mx-auto mb-3">
-                        <i className="ri-mail-line text-lg text-primary-600"></i>
-                      </div>
-                      <div className="text-sm font-semibold text-foreground-950 mb-1">Email Us</div>
-                      <a href="mailto:cody@nevtech.io" className="text-sm text-foreground-600 hover:text-primary-600 transition-colors">cody@nevtech.io</a>
-                    </div>
-                    <div>
-                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-100 mx-auto mb-3">
-                        <i className="ri-calendar-check-line text-lg text-primary-600"></i>
-                      </div>
-                      <div className="text-sm font-semibold text-foreground-950 mb-1">Schedule Directly</div>
-                      <a
-                        href="https://calendly.com/cody-nevtech/30min"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-foreground-600 hover:text-primary-600 transition-colors"
-                      >
-                        Book on Calendly
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        </main>
-
-        <Footer />
-      </div>
-    </>
+      {/* CTA */}
+      <section id="contact" style={{ padding: '80px 6%', background: '#0f2f27', color: '#f1f4ec' }}>
+        <p style={{ font: `10px/1.5 ${mono}`, textTransform: 'uppercase', letterSpacing: 1.5, color: '#7eddb8' }}>//05 Free assessment</p>
+        <h2 style={{ font: `normal clamp(42px,5vw,72px)/1.05 ${serif}`, letterSpacing: -2, margin: '17px 0 24px', maxWidth: 800 }}>
+          Fifteen minutes.<br />
+          <em style={{ fontStyle: 'normal', color: '#7eddb8' }}>A clear next step.</em>
+        </h2>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 30 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, alignItems: 'center' }}>
+            <Link className="dl-btn light" to="/contact">Get your free assessment <span aria-hidden="true">↗</span></Link>
+            <a className="dl-btn on-dark-ghost" href="tel:3175089493">Call (317) 508-9493</a>
+          </div>
+          <p style={{ font: `10px/1.9 ${mono}`, textTransform: 'uppercase', letterSpacing: 1, color: '#7eddb8' }}>
+            Indiana office · Indianapolis, IN<br />
+            <a href="mailto:cody@nevtech.io" style={{ color: '#d2e1d6', textDecoration: 'none' }}>cody@nevtech.io</a> · <a href="https://calendly.com/cody-nevtech/30min" style={{ color: '#d2e1d6', textDecoration: 'none' }}>calendly.com/cody-nevtech/30min</a>
+          </p>
+        </div>
+      </section>
+    </DaylightPage>
   );
 }

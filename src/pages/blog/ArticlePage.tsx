@@ -1,9 +1,9 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import Header from '@/components/feature/Header';
-import Footer from '@/components/feature/Footer';
+import { DaylightPage } from '@/components/daylight';
 import { supabase } from '@/lib/supabase';
 import type { BlogPost } from '@/pages/blog/page';
+import { posts as staticPosts, order as staticOrder } from '@/data/blogPosts';
 
 function formatDate(value: string | null) {
   if (!value) return '';
@@ -12,6 +12,119 @@ function formatDate(value: string | null) {
   return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
+type StaticPost = {
+  title: string;
+  category: string;
+  date: string;
+  author: string;
+  read: string;
+  excerpt: string;
+  body: { h?: string; p?: string }[];
+};
+
+const staticMap = staticPosts as Record<string, StaticPost>;
+const staticKeys = staticOrder as string[];
+
+type ArticleModel = {
+  title: string;
+  category: string;
+  excerpt: string;
+  author: string;
+  date: string;
+  read: string;
+  body: ReactNode;
+  more: { href: string; title: string; category: string }[];
+};
+
+const serif = "Georgia,'Times New Roman',serif";
+const mono = "'Courier New',monospace";
+
+function moreFor(excludeKey: string) {
+  return staticKeys.filter((k) => k !== excludeKey).slice(0, 3).map((k) => ({ href: `/blog/${k}`, title: staticMap[k].title, category: staticMap[k].category }));
+}
+
+function readTime(body: string): string {
+  const words = body.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+  return `${Math.max(1, Math.round(words / 200))} min`;
+}
+
+function modelFromStatic(key: string): ArticleModel {
+  const p = staticMap[key];
+  return {
+    title: p.title,
+    category: p.category,
+    excerpt: p.excerpt,
+    author: p.author,
+    date: p.date,
+    read: p.read,
+    body: p.body.map((b, i) => b.h
+      ? <h2 key={i} style={{ font: `normal 30px/1.15 ${serif}`, letterSpacing: -0.8, marginTop: 18 }}>{b.h}</h2>
+      : <p key={i} style={{ fontSize: 17, lineHeight: 1.85, color: '#2c4a3a' }}>{b.p}</p>),
+    more: moreFor(key),
+  };
+}
+
+function modelFromSupabase(post: BlogPost): ArticleModel {
+  const text = post.body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  const excerpt = post.meta_description && post.meta_description.trim() ? post.meta_description.trim() : (text.length > 160 ? `${text.slice(0, 160)}…` : text);
+  return {
+    title: post.title,
+    category: post.category || 'Blog',
+    excerpt,
+    author: post.author || 'NevTech',
+    date: formatDate(post.published_at || post.created_at),
+    read: readTime(post.body),
+    body: <div className="dl-x-article-html" dangerouslySetInnerHTML={{ __html: post.body }} />,
+    more: moreFor(post.slug),
+  };
+}
+
+/* ---------- Article template (blog-article.dc.html) ---------- */
+function ArticleView({ a }: { a: ArticleModel }) {
+  return (
+    <DaylightPage title={`${a.title} — NevTech AI`}>
+      <article>
+        {/* Article header */}
+        <header style={{ padding: '80px 6% 48px', borderBottom: '1px solid #173c2a22' }}>
+          <Link to="/blog" className="dl-eyebrow" style={{ textDecoration: 'none' }}>← Blog / {a.category}</Link>
+          <h1 style={{ font: `normal clamp(38px,4.6vw,70px)/1.05 ${serif}`, letterSpacing: -2, margin: '18px 0 22px', maxWidth: 960 }}>{a.title}</h1>
+          <p style={{ fontSize: 17, lineHeight: 1.6, color: '#566d5f', maxWidth: 640 }}>{a.excerpt}</p>
+          <p style={{ font: `10px/1.9 ${mono}`, textTransform: 'uppercase', letterSpacing: 1, color: '#55745d', marginTop: 26 }}>{a.author} · {a.date} · {a.read} read</p>
+        </header>
+
+        {/* Article body */}
+        <div style={{ padding: '56px 6% 80px', display: 'grid', gridTemplateColumns: 'minmax(0,720px)', justifyContent: 'start', gap: 22 }}>
+          {a.body}
+          <div style={{ marginTop: 30, borderTop: '1px solid #173c2a22', paddingTop: 24, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: 16, alignItems: 'center' }}>
+            <p style={{ fontSize: 13, color: '#566d5f' }}>Written by {a.author}, Founder of NevTech AI, Indianapolis.</p>
+            <Link to="/contact" className="dl-btn" style={{ padding: '12px 18px', minHeight: 0 }}>Talk to us <span aria-hidden="true">↗</span></Link>
+          </div>
+        </div>
+      </article>
+
+      {/* More */}
+      <section style={{ padding: '50px 6% 70px', borderTop: '1px solid #173c2a22', background: '#e8efe0' }}>
+        <p className="dl-eyebrow" style={{ marginBottom: 18 }}>Keep reading</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 12 }}>
+          {a.more.map((m) => (
+            <Link key={m.href} to={m.href} className="dl-x-more-card">
+              <span style={{ font: `10px ${mono}`, letterSpacing: 1, color: '#07806a', textTransform: 'uppercase' }}>{m.category}</span>
+              <span style={{ font: `normal 21px/1.2 ${serif}`, letterSpacing: -0.5 }}>{m.title}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </DaylightPage>
+  );
+}
+
+/* ---------- Static article (dedicated routes) ---------- */
+export function StaticArticle({ postKey }: { postKey: string }) {
+  const key = staticMap[postKey] ? postKey : staticKeys[0];
+  return <ArticleView a={modelFromStatic(key)} />;
+}
+
+/* ---------- /blog/:slug ---------- */
 export default function BlogArticlePage() {
   const { slug } = useParams<{ slug: string }>();
   const [post, setPost] = useState<BlogPost | null>(null);
@@ -28,6 +141,7 @@ export default function BlogArticlePage() {
     setLoading(true);
     setError(false);
     setNotFound(false);
+    setPost(null);
     supabase
       .from('blog_posts')
       .select('*')
@@ -53,186 +167,33 @@ export default function BlogArticlePage() {
     load();
   }, [load]);
 
-  useEffect(() => {
-    if (post) {
-      document.title = post.title;
-    }
-    return () => {};
-  }, [post]);
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-background-50">
-        <Header />
-        <div className="flex items-center justify-center py-40">
-          <div className="w-10 h-10 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
-        </div>
-        <Footer />
-      </div>
+      <DaylightPage title="Article — NevTech AI">
+        <section className="dl-hero">
+          <p className="dl-eyebrow">// Loading</p>
+          <p className="dl-lede" style={{ marginTop: 16 }}>Loading article…</p>
+        </section>
+      </DaylightPage>
     );
   }
 
-  if (notFound || !post) {
-    return (
-      <div className="min-h-screen bg-background-50">
-        <Header />
-        <div className="flex flex-col items-center justify-center py-40 px-4 text-center">
-          <div className="w-14 h-14 flex items-center justify-center rounded-full bg-secondary-100 text-secondary-900 mb-4">
-            <i className="ri-file-search-line text-2xl"></i>
-          </div>
-          <p className="text-foreground-900 font-semibold text-lg mb-1">Article not found</p>
-          <p className="text-foreground-600 text-sm mb-6">The post you&apos;re looking for doesn&apos;t exist or isn&apos;t published yet.</p>
-          <Link
-            to="/blog"
-            className="inline-flex items-center gap-2 bg-primary-500 text-background-50 px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-600 transition-colors whitespace-nowrap cursor-pointer"
-          >
-            <i className="ri-arrow-left-line"></i>
-            Back to Blog
-          </Link>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  if (post) return <ArticleView a={modelFromSupabase(post)} />;
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background-50">
-        <Header />
-        <div className="flex flex-col items-center justify-center py-40 px-4 text-center">
-          <div className="w-14 h-14 flex items-center justify-center rounded-full bg-secondary-100 text-secondary-900 mb-4">
-            <i className="ri-cloud-off-line text-2xl"></i>
-          </div>
-          <p className="text-foreground-900 font-semibold mb-1">We couldn&apos;t load this post.</p>
-          <p className="text-foreground-600 text-sm mb-5">Please try again in a moment.</p>
-          <button
-            onClick={load}
-            className="inline-flex items-center gap-2 bg-primary-500 text-background-50 px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-600 transition-colors whitespace-nowrap cursor-pointer"
-          >
-            <i className="ri-refresh-line"></i>
-            Retry
-          </button>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
-
-  const tags: string[] = Array.isArray(post.tags) ? post.tags : [];
+  // No Supabase row (not found, or error) — fall back to the static posts.
+  if ((notFound || error) && slug && staticMap[slug]) return <ArticleView a={modelFromStatic(slug)} />;
 
   return (
-    <div className="min-h-screen bg-background-50">
-      <Header />
-      <main>
-        {/* Article hero */}
-        <section className="relative bg-gradient-to-br from-background-50 via-primary-50/30 to-background-100 pt-32 pb-14 overflow-hidden">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-100/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent-100/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3"></div>
-
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <div className="max-w-3xl mx-auto">
-              <nav className="flex flex-wrap items-center gap-2 text-sm text-foreground-600 mb-6">
-                <Link to="/" className="hover:text-foreground-950 transition-colors cursor-pointer whitespace-nowrap">
-                  Home
-                </Link>
-                <i className="ri-arrow-right-s-line"></i>
-                <Link to="/blog" className="hover:text-foreground-950 transition-colors cursor-pointer whitespace-nowrap">
-                  Blog
-                </Link>
-                <i className="ri-arrow-right-s-line"></i>
-                <span className="text-foreground-900 font-medium line-clamp-1">{post.title}</span>
-              </nav>
-
-              {post.category && (
-                <div className="inline-flex items-center gap-1 bg-primary-100/80 text-primary-800 px-3 py-1.5 rounded-full text-sm font-semibold mb-5 whitespace-nowrap">
-                  {post.category}
-                </div>
-              )}
-
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground-950 leading-tight mb-6">
-                {post.title}
-              </h1>
-
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-foreground-600">
-                {post.author && (
-                  <span className="font-semibold text-foreground-900">{post.author}</span>
-                )}
-                {post.author_title && (
-                  <>
-                    <span className="hidden sm:inline text-foreground-300">|</span>
-                    <span>{post.author_title}</span>
-                  </>
-                )}
-                <span className="hidden sm:inline text-foreground-300">|</span>
-                <span className="inline-flex items-center gap-1 whitespace-nowrap">
-                  <i className="ri-calendar-line"></i>
-                  {formatDate(post.published_at || post.created_at)}
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Article body */}
-        <article className="py-14 md:py-16 bg-background-50">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl mx-auto">
-              {post.cover_image && (
-                <div className="w-full h-64 md:h-80 rounded-xl overflow-hidden mb-10 bg-background-200">
-                  <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover" />
-                </div>
-              )}
-
-              <div className="blog-prose" dangerouslySetInnerHTML={{ __html: post.body }} />
-
-              {tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-12 pt-8 border-t border-background-200">
-                  {tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center gap-1 bg-secondary-100 text-secondary-900 text-xs font-medium px-3 py-1 rounded-full whitespace-nowrap"
-                    >
-                      <i className="ri-price-tag-3-line"></i>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </article>
-
-        {/* Back to blog */}
-        <section className="py-14 bg-gradient-to-br from-background-50 via-primary-50/20 to-background-100">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-5 p-6 bg-background-100 border border-background-200 rounded-xl">
-              <div>
-                <div className="text-foreground-900 font-bold text-lg mb-1">Want to build software this way?</div>
-                <p className="text-sm text-foreground-700">
-                  Talk to the NevTech team about a fixed-price MVP in two to six weeks.
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center justify-center gap-2 bg-primary-500 text-background-50 px-6 py-3 rounded-lg text-sm font-semibold hover:bg-primary-600 transition-colors whitespace-nowrap cursor-pointer"
-                >
-                  Book a scoping call
-                  <i className="ri-arrow-right-line"></i>
-                </Link>
-                <Link
-                  to="/blog"
-                  className="inline-flex items-center justify-center gap-2 border border-foreground-200 text-foreground-900 px-6 py-3 rounded-lg text-sm font-semibold hover:bg-background-100 transition-colors whitespace-nowrap cursor-pointer"
-                >
-                  <i className="ri-arrow-left-line"></i>
-                  All posts
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
+    <DaylightPage title="Article not found — NevTech AI">
+      <section className="dl-hero">
+        <p className="dl-eyebrow">// Blog</p>
+        <h1>Article<br /><em>not found.</em></h1>
+        <p className="dl-lede">The post you’re looking for doesn’t exist or isn’t published yet.</p>
+        <div className="dl-actions">
+          <Link className="dl-btn" to="/blog">Back to blog <span aria-hidden="true">↗</span></Link>
+          {error && <button type="button" className="dl-btn ghost" onClick={load}>Retry</button>}
+        </div>
+      </section>
+    </DaylightPage>
   );
 }

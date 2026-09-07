@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import Header from '@/components/feature/Header';
-import Footer from '@/components/feature/Footer';
+import { DaylightPage } from '@/components/daylight';
 import { supabase } from '@/lib/supabase';
+import { posts as staticPosts, order as staticOrder } from '@/data/blogPosts';
 
 export interface BlogPost {
   id: number;
@@ -37,6 +37,53 @@ function excerpt(post: BlogPost): string {
   return text.length > 160 ? `${text.slice(0, 160)}…` : text;
 }
 
+/* Normalised card model shared by Supabase rows and the static fallback posts. */
+type CardPost = {
+  key: string;
+  to: string;
+  cover: string | null;
+  meta: string;
+  title: string;
+  excerpt: string;
+  byline: string;
+};
+
+type StaticPost = { title: string; category: string; date: string; author: string; read: string; excerpt: string };
+
+function readTime(body: string): string {
+  const words = body.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+  return `${Math.max(1, Math.round(words / 200))} min`;
+}
+
+function fromSupabase(post: BlogPost): CardPost {
+  const meta = [post.category, readTime(post.body)].filter(Boolean).join(' · ');
+  return {
+    key: `db-${post.id}`,
+    to: `/blog/${post.slug}`,
+    cover: post.cover_image,
+    meta,
+    title: post.title,
+    excerpt: excerpt(post),
+    byline: `${post.author || 'NevTech'} · ${formatDate(post.published_at || post.created_at)}`,
+  };
+}
+
+function fromStatic(key: string): CardPost {
+  const p = (staticPosts as Record<string, StaticPost>)[key];
+  return {
+    key: `static-${key}`,
+    to: `/blog/${key}`,
+    cover: null,
+    meta: `${p.category} · ${p.read}`,
+    title: p.title,
+    excerpt: p.excerpt,
+    byline: `${p.author} · ${p.date}`,
+  };
+}
+
+const serif = "Georgia,'Times New Roman',serif";
+const mono = "'Courier New',monospace";
+
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,121 +112,36 @@ export default function BlogPage() {
     load();
   }, [load]);
 
+  // Fall back to the static posts whenever Supabase errors or returns nothing.
+  const cards: CardPost[] = !loading && !error && posts && posts.length > 0
+    ? posts.map(fromSupabase)
+    : (staticOrder as string[]).map(fromStatic);
+
   return (
-    <div className="min-h-screen bg-background-50">
-      <Header />
-      <main>
-        {/* Blog hero */}
-        <section className="relative bg-gradient-to-br from-background-50 via-primary-50/30 to-background-100 pt-32 pb-16 overflow-hidden">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-100/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent-100/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3"></div>
+    <DaylightPage title="Blog — NevTech AI">
+      {/* Blog hero */}
+      <section className="dl-hero">
+        <p className="dl-eyebrow">//01 NevTech blog</p>
+        <h1>Ideas from the<br /><em>AI-native software team.</em></h1>
+        <p className="dl-lede">Practical notes on AI, automation, and connectivity for businesses that would rather ship than speculate.</p>
+      </section>
 
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <div className="max-w-3xl mx-auto text-center">
-              <div className="inline-flex items-center gap-2 bg-primary-100/80 text-primary-800 px-4 py-2 rounded-full text-sm font-semibold mb-6">
-                <i className="ri-article-line"></i>
-                NevTech Blog
-              </div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground-950 leading-tight mb-6">
-                Ideas from the AI-Native Software Team
-              </h1>
-              <p className="text-lg md:text-xl text-foreground-700 leading-relaxed max-w-2xl mx-auto">
-                How we build custom software and AI automation for small and mid-sized businesses — straight from the
-                Indianapolis-based team at NevTech.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Blog listing */}
-        <section className="py-16 md:py-20 bg-background-50">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            {loading && (
-              <div className="flex flex-col items-center justify-center py-20">
-                <div className="w-10 h-10 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mb-4"></div>
-                <p className="text-foreground-600">Loading posts…</p>
-              </div>
+      {/* Articles */}
+      <section style={{ padding: '60px 6% 80px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 12 }}>
+        {cards.map((c) => (
+          <Link key={c.key} to={c.to} className="dl-x-post-card">
+            {c.cover ? (
+              <img src={c.cover} alt="" style={{ aspectRatio: '16/9', width: '100%', objectFit: 'cover', borderRadius: 4, display: 'block' }} />
+            ) : (
+              <span style={{ aspectRatio: '16/9', borderRadius: 4, background: 'repeating-linear-gradient(135deg,#e2ebdf 0 12px,#d6e2d2 12px 24px)', display: 'grid', placeItems: 'center', font: `10px ${mono}`, color: '#55745d', textTransform: 'uppercase', letterSpacing: 1 }}>Cover image</span>
             )}
-
-            {!loading && error && (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="w-14 h-14 flex items-center justify-center rounded-full bg-secondary-100 text-secondary-900 mb-4">
-                  <i className="ri-cloud-off-line text-2xl"></i>
-                </div>
-                <p className="text-foreground-900 font-semibold mb-1">We couldn&apos;t load the blog right now.</p>
-                <p className="text-foreground-600 text-sm mb-5">Please try again in a moment.</p>
-                <button
-                  onClick={load}
-                  className="inline-flex items-center gap-2 bg-primary-500 text-background-50 px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-600 transition-colors whitespace-nowrap cursor-pointer"
-                >
-                  <i className="ri-refresh-line"></i>
-                  Retry
-                </button>
-              </div>
-            )}
-
-            {!loading && !error && posts && posts.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="w-14 h-14 flex items-center justify-center rounded-full bg-secondary-100 text-secondary-900 mb-4">
-                  <i className="ri-edit-2-line text-2xl"></i>
-                </div>
-                <p className="text-foreground-900 font-semibold mb-1">No posts published yet.</p>
-                <p className="text-foreground-600 text-sm">Check back soon — new articles are on the way.</p>
-              </div>
-            )}
-
-            {!loading && !error && posts && posts.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {posts.map((post) => (
-                  <Link
-                    key={post.id}
-                    to={`/blog/${post.slug}`}
-                    className="group flex flex-col bg-background-100 border border-background-200 rounded-lg overflow-hidden hover:border-primary-300 transition-colors cursor-pointer"
-                  >
-                    {post.cover_image ? (
-                      <div className="w-full h-44 overflow-hidden bg-background-200">
-                        <img
-                          src={post.cover_image}
-                          alt={post.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-full h-44 flex items-center justify-center bg-gradient-to-br from-primary-100 to-accent-100">
-                        <i className="ri-code-box-line text-4xl text-primary-600/50"></i>
-                      </div>
-                    )}
-
-                    <div className="flex flex-col flex-1 p-5">
-                      {post.category && (
-                        <div className="inline-flex items-center gap-1 bg-secondary-100 text-secondary-900 text-xs font-medium px-2.5 py-1 rounded-full mb-3 self-start whitespace-nowrap">
-                          {post.category}
-                        </div>
-                      )}
-                      <h3 className="text-base font-bold text-foreground-950 leading-snug mb-2 group-hover:text-primary-700 transition-colors line-clamp-2">
-                        {post.title}
-                      </h3>
-                      <p className="text-sm text-foreground-700 leading-relaxed line-clamp-3 mb-4">
-                        {excerpt(post)}
-                      </p>
-                      <div className="mt-auto flex flex-wrap items-center justify-between gap-2 text-xs text-foreground-600 pt-3 border-t border-background-200">
-                        <span className="font-medium text-foreground-800 whitespace-nowrap">
-                          {post.author || 'NevTech'}
-                        </span>
-                        <span className="inline-flex items-center gap-1 whitespace-nowrap">
-                          <i className="ri-calendar-line"></i>
-                          {formatDate(post.published_at || post.created_at)}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
+            <span style={{ font: `10px ${mono}`, letterSpacing: 1, color: '#07806a', textTransform: 'uppercase' }}>{c.meta}</span>
+            <span style={{ font: `normal 24px/1.15 ${serif}`, letterSpacing: -0.6 }}>{c.title}</span>
+            <span style={{ fontSize: 13, color: '#5a705f', lineHeight: 1.7 }}>{c.excerpt}</span>
+            <span style={{ fontSize: 11, color: '#55745d', borderTop: '1px solid #173c2a22', paddingTop: 12, marginTop: 'auto' }}>{c.byline}</span>
+          </Link>
+        ))}
+      </section>
+    </DaylightPage>
   );
 }

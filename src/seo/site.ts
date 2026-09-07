@@ -7,7 +7,7 @@ export const SITE_URL = (
 
 // Existing absolute asset already used across the project (NevTech AI logo).
 export const LOGO_URL =
-  'https://static.readdy.ai/image/1bc91b7d55091cd3d488a2b17839859a/f8906f871ec7444a62120ab3c50f3b70.png';
+  `${SITE_URL}/og-image.svg`;
 
 export function absoluteUrl(path: string): string {
   const clean = path === '/' ? '/' : `/${path.replace(/^\/+/, '')}`;

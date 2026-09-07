@@ -26,6 +26,7 @@ const AIConstructionIndianaPage = lazy(() => import('../pages/ai-construction-in
 const GetLeadsPage = lazy(() => import('../pages/get-leads/page'));
 const TMobileBusinessPage = lazy(() => import('../pages/tmobile-business/page'));
 const NotFoundPage = lazy(() => import('../pages/NotFound'));
+const SitemapPage = lazy(() => import('../pages/sitemap/page'));
 const IntakeFormPage = lazy(() => import('../pages/intake-form/page'));
 const SupportPage = lazy(() => import('../pages/support/page'));
 const TermsPage = lazy(() => import('../pages/terms/page'));
@@ -217,6 +218,10 @@ const routes: RouteObject[] = [
   {
     path: '/data-and-ai-consultant-indianapolis',
     element: <DataAndAIConsultantIndianapolisPage />,
+  },
+  {
+    path: '/sitemap',
+    element: <SitemapPage />,
   },
   {
     path: '*',
